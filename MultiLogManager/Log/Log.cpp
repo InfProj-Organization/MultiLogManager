@@ -44,18 +44,28 @@ namespace Log
 
 	int CLog::CreateFileSettings()
 	{
-		json myJson;
+		json createJson;
 
-		myJson["path"] = "path test";
+		std::string currentPath = std::filesystem::current_path().string();
+
+		createJson["path"] = currentPath;
+
+		FilePathToSettings = currentPath;
 
 		std::ofstream outputFile("Settings.json");
 
-		outputFile << std::setw(4) << myJson << std::endl;
+		outputFile << std::setw(4) << createJson << std::endl;
 
 		outputFile.close();
 
-		// move it
-		json readJson = ReadJsonFromFile("Settings.json");
+		return DescriptionErrors::E_OK;
+	}
+
+	int CLog::ReadFileSettings()
+	{
+		json readJson;
+
+		readJson = ReadJsonFromFile(FilePathToSettings + "\\Settings.json");
 
 		std::string message = readJson["path"];
 

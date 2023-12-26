@@ -13,9 +13,8 @@ namespace Log
 		CLog();
 		virtual ~CLog();
 
-		void CreateFileSettings();
-		void WriteJsonToFile(const std::string& filename, const json& data);
 		void CreateLog();
+		void CreateFileSettings();
 
 	protected:
 		class Impl;

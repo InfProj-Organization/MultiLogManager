@@ -37,11 +37,9 @@ namespace Log
 		delete pImpl;
 	}
 
-	void CLog::WriteJsonToFile(const std::string& filename, const json& data)
+	void CLog::CreateLog()
 	{
-		std::ofstream file(filename);
-		file << data;
-		file.close();
+
 	}
 
 	void CLog::CreateFileSettings()
@@ -77,10 +75,5 @@ namespace Log
 
 			recordToFile.close();
 		}
-	}
-
-	void CLog::CreateLog()
-	{
-		
 	}
 }

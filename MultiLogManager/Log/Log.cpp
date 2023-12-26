@@ -12,20 +12,29 @@ using json = nlohmann::json;
 
 namespace Log
 {
+	class CLog::Impl
+	{
+	public:
+		std::string FilePathToLog;
+		std::filesystem::path dllPath;
+		std::filesystem::path settingsPath;
+		static std::string FinalPathToFileLog;
+	};
+
 	CLog* pLog = nullptr;
 
 	std::string SETTINGS_FILE_NAME = "Settings.json";
 
-	std::string CLog::FinalPathToFileLog = "";
+	std::string CLog::Impl::FinalPathToFileLog = "";
 
-	CLog::CLog()
+	CLog::CLog() : pImpl(new Impl)
 	{
 
 	}
 
 	CLog::~CLog()
 	{
-	
+		delete pImpl;
 	}
 
 	void CLog::WriteJsonToFile(const std::string& filename, const json& data)
@@ -56,9 +65,9 @@ namespace Log
 			object = ReadJson(tempScanParh);
 
 			auto& path = object["path"];
-			this->FinalPathToFileLog = path;
+			CLog::Impl::FinalPathToFileLog = path;
 
-			std::cout << "Path to settings: " << this->FinalPathToFileLog << std::endl;
+			std::cout << "Path to settings: " << CLog::Impl::FinalPathToFileLog << std::endl;
 		}
 		else
 		{

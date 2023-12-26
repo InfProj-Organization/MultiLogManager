@@ -18,12 +18,9 @@ namespace Log
 		void CreateLog();
 
 	protected:
-		std::string FilePathToLog;
+		class Impl;
 
-		std::filesystem::path dllPath;
-		std::filesystem::path settingsPath;
-
-		static std::string FinalPathToFileLog;
+		Impl* pImpl;
 	};
 
 	extern LOG_API CLog* pLog;

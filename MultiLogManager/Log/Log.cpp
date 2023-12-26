@@ -8,6 +8,7 @@
 
 using json = nlohmann::json;
 
+#include "Data.hpp"
 #include "Log.hpp"
 
 namespace Log
@@ -37,9 +38,36 @@ namespace Log
 		delete pImpl;
 	}
 
-	void CLog::CreateLog()
+	u32Type CLog::CreateLog()
 	{
+		std::filesystem::path path_to_log = CLog::Impl::FinalPathToFileLog + "\\log.txt";
 
+		try
+		{
+			if (!std::filesystem::exists(path_to_log))
+			{
+				std::ofstream recordFile(path_to_log);
+
+				if (recordFile.is_open())
+				{
+					recordFile.close();
+
+					return PositiveChecks::P_FILE_LOG_CREATED;
+				}
+				else
+				{
+					return NegativeChecks::E_FILE_LOG_NOT_OPEN;
+				}
+			}
+			else 
+			{
+				return PositiveChecks::P_FILE_LOG_FOUND;
+			}
+		}
+		catch (const std::filesystem::filesystem_error& e)
+		{
+			return NegativeChecks::E_FILE_LOG_SYSTEM_ERROR;
+		}
 	}
 
 	void CLog::CreateFileSettings()

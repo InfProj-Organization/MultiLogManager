@@ -8,6 +8,7 @@
 
 using json = nlohmann::json;
 
+#include "..\MultiLogManager\Data.hpp"
 #include "..\MultiLogManager\Exports.hpp"
 #include "..\MultiLogManager\Log\Log.hpp"
 
@@ -20,7 +21,7 @@ int main()
 
     pLog->CreateFileSettings();
 
-    //pLog->ReadFileSettings();
+    pLog->CreateLog();
 
     delete pLog;
 

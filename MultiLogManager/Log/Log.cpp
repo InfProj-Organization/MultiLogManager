@@ -14,6 +14,10 @@ namespace Log
 {
 	CLog* pLog = nullptr;
 
+	std::string SETTINGS_FILE_NAME = "Settings.json";
+
+	std::string CLog::FinalPathToFileLog = "";
+
 	CLog::CLog()
 	{
 
@@ -24,53 +28,50 @@ namespace Log
 	
 	}
 
-	int CLog::WriteJsonToFile(const std::string& filename, const json& data)
+	void CLog::WriteJsonToFile(const std::string& filename, const json& data)
 	{
 		std::ofstream file(filename);
 		file << data;
 		file.close();
-
-		return DescriptionErrors::E_OK;
 	}
 
-	json CLog::ReadJsonFromFile(const std::string& filename)
+	void CLog::CreateFileSettings()
 	{
-		std::ifstream file(filename);
-		json data;
-		file >> data;
-		file.close();
-		return data;
+		json object{};
+		std::string startPath = std::filesystem::current_path().string();
+
+		std::string tempScanParh = startPath + "\\" + SETTINGS_FILE_NAME;
+
+		auto ReadJson = [&](const std::string& filename) -> json
+		{
+			std::ifstream file(filename);
+			json data;
+			file >> data;
+			file.close();
+			return data;
+		};
+
+		if (std::filesystem::exists(tempScanParh))
+		{
+			object = ReadJson(tempScanParh);
+
+			auto& path = object["path"];
+			this->FinalPathToFileLog = path;
+
+			std::cout << "Path to settings: " << this->FinalPathToFileLog << std::endl;
+		}
+		else
+		{
+			object["path"] = startPath;
+			std::ofstream recordToFile(SETTINGS_FILE_NAME);
+			recordToFile << std::setw(4) << object << std::endl;
+
+			recordToFile.close();
+		}
 	}
 
-	int CLog::CreateFileSettings()
+	void CLog::CreateLog()
 	{
-		json createJson;
-
-		std::string currentPath = std::filesystem::current_path().string();
-
-		createJson["path"] = currentPath;
-
-		FilePathToSettings = currentPath;
-
-		std::ofstream outputFile("Settings.json");
-
-		outputFile << std::setw(4) << createJson << std::endl;
-
-		outputFile.close();
-
-		return DescriptionErrors::E_OK;
-	}
-
-	int CLog::ReadFileSettings()
-	{
-		json readJson;
-
-		readJson = ReadJsonFromFile(FilePathToSettings + "\\Settings.json");
-
-		std::string message = readJson["path"];
-
-		std::cout << "Read from JSON file: " << message << std::endl;
-
-		return DescriptionErrors::E_OK;
+		
 	}
 }

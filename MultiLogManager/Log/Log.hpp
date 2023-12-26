@@ -4,29 +4,26 @@ namespace Log
 {
 	enum DescriptionErrors
 	{
-		E_OK = 1,
-		E_FILE_IO_ERROR = 805,
+		//-' ?
 	};
 
 	class LOG_API CLog
 	{
-	protected:
-		std::string FilePathToSettings;
-
-		std::filesystem::path dllPath;
-		std::filesystem::path settingsPath;
-
 	public: 
 		CLog();
 		virtual ~CLog();
 
-		int CreateFileSettings();
-		int ReadFileSettings();
-		int WriteJsonToFile(const std::string& filename, const json& data);
+		void CreateFileSettings();
+		void WriteJsonToFile(const std::string& filename, const json& data);
+		void CreateLog();
 
-		json ReadJsonFromFile(const std::string& filename);
+	protected:
+		std::string FilePathToLog;
 
-		inline std::string GetToFilePathToSettings() { return this->FilePathToSettings; }
+		std::filesystem::path dllPath;
+		std::filesystem::path settingsPath;
+
+		static std::string FinalPathToFileLog;
 	};
 
 	extern LOG_API CLog* pLog;

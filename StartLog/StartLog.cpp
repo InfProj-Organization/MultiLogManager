@@ -20,7 +20,7 @@ int main()
 
     pLog->CreateFileSettings();
 
-    pLog->ReadFileSettings();
+    //pLog->ReadFileSettings();
 
     delete pLog;
 

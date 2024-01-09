@@ -8,7 +8,6 @@
 
 using json = nlohmann::json;
 
-#include "..\MultiLogManager\Data.hpp"
 #include "..\MultiLogManager\Exports.hpp"
 #include "..\MultiLogManager\Log\Log.hpp"
 
@@ -22,6 +21,15 @@ int main()
     pLog->CreateFileSettings();
 
     pLog->CreateLog();
+
+    pLog->Write(0, "~ %s", __FUNCTION__);
+
+    pLog->Write(0, "~ %s", __FUNCTION__);
+    pLog->Write(0, "~ %s", __FUNCTION__);
+    pLog->Write(0, "~ %s", __FUNCTION__);
+    //pLog->Write(0, "~ %s", __FUNCTION__);
+
+    //CLog::Log(0, "~ %s", __FUNCTION__);
 
     delete pLog;
 

@@ -6,6 +6,7 @@ namespace Log
 	{
 		P_FILE_LOG_CREATED = 0x201, //-' Файл успешно создан
 		P_FILE_LOG_FOUND = 0x202, //-' Файл уже существует
+		P_DIR_LOG_CREATED = 0x203, //-' Файл для сохранения лога не нашел папку, создаем ее
 	};
 
 	enum NegativeChecks
@@ -14,15 +15,26 @@ namespace Log
 		E_FILE_LOG_SYSTEM_ERROR = 0x602, //-' Ошибка файловой системы
 	};
 
+	enum LoggingLevels
+	{
+		LOG_WARN = 0,
+		LOG_INFO,
+		LOG_DEBUG,
+		LOG_ERROR,
+		LOG_OPEN,
+		LOG_CLOSE,
+	};
+
 	class LOG_API CLog
 	{
 	public: 
 		CLog();
 		virtual ~CLog();
 
-		u32Type CreateLog();
+		unsigned CreateLog();
 
 		void CreateFileSettings();
+		void Write(unsigned level, const char* format, ...);
 
 	protected:
 		class Impl;

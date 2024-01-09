@@ -8,11 +8,14 @@
 
 using json = nlohmann::json;
 
-#include "Data.hpp"
 #include "Log.hpp"
 
 namespace Log
 {
+	CLog* pLog = nullptr;
+
+	std::string SETTINGS_FILE_NAME = "Settings.json";
+
 	class CLog::Impl
 	{
 	public:
@@ -20,11 +23,13 @@ namespace Log
 		std::filesystem::path dllPath;
 		std::filesystem::path settingsPath;
 		static std::string FinalPathToFileLog;
+
+		struct tm* getCurrentTimeInfo()
+		{
+			__time64_t current_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+			return localtime(&current_time);
+		}
 	};
-
-	CLog* pLog = nullptr;
-
-	std::string SETTINGS_FILE_NAME = "Settings.json";
 
 	std::string CLog::Impl::FinalPathToFileLog = "";
 
@@ -38,23 +43,37 @@ namespace Log
 		delete pImpl;
 	}
 
-	u32Type CLog::CreateLog()
+	unsigned CLog::CreateLog()
 	{
 		std::filesystem::path path_to_log = CLog::Impl::FinalPathToFileLog + "\\log.txt";
 
-		try
+		try 
 		{
-			if (!std::filesystem::exists(path_to_log))
+			if (!std::filesystem::exists(CLog::Impl::FinalPathToFileLog)) 
+			{
+				if (!std::filesystem::create_directory(CLog::Impl::FinalPathToFileLog)) 
+				{
+					return PositiveChecks::P_DIR_LOG_CREATED;
+				}
+			}
+
+			if (!std::filesystem::exists(path_to_log)) 
 			{
 				std::ofstream recordFile(path_to_log);
-
-				if (recordFile.is_open())
+				if (recordFile.is_open()) 
 				{
+					struct tm* time_info = pImpl->getCurrentTimeInfo();
+
+					std::ostringstream logStream;
+					logStream << "*** log created " << std::put_time(time_info, "(%T:%F)") << " ***\n";
+					logStream << "\n";
+					recordFile << logStream.str();
+
 					recordFile.close();
 
 					return PositiveChecks::P_FILE_LOG_CREATED;
 				}
-				else
+				else 
 				{
 					return NegativeChecks::E_FILE_LOG_NOT_OPEN;
 				}
@@ -64,7 +83,7 @@ namespace Log
 				return PositiveChecks::P_FILE_LOG_FOUND;
 			}
 		}
-		catch (const std::filesystem::filesystem_error& e)
+		catch (...)
 		{
 			return NegativeChecks::E_FILE_LOG_SYSTEM_ERROR;
 		}
@@ -102,6 +121,59 @@ namespace Log
 			recordToFile << std::setw(4) << object << std::endl;
 
 			recordToFile.close();
+		}
+	}
+
+	void CLog::Write(unsigned level, const char* format, ...)
+	{
+		std::string logLevelString;
+
+		switch (level)
+		{
+			case LoggingLevels::LOG_WARN:
+				logLevelString = "warn";
+				break;
+			case LoggingLevels::LOG_INFO:
+				logLevelString = "info";
+				break;
+			case LoggingLevels::LOG_DEBUG:
+				logLevelString = "debug";
+				break;
+			case LoggingLevels::LOG_ERROR:
+				logLevelString = "error";
+				break;
+			case LoggingLevels::LOG_OPEN:
+				logLevelString = "start";
+				break;
+			case LoggingLevels::LOG_CLOSE:
+				logLevelString = "close";
+				break;
+		}
+
+		struct tm* time_info = pImpl->getCurrentTimeInfo();
+
+		std::ostringstream logStream;
+		logStream << "[" << std::put_time(time_info, "%T:%F") << "] " << logLevelString << ": ";
+
+		va_list args;
+		va_start(args, format);
+
+		char buffer[256];
+		vsnprintf(buffer, sizeof(buffer), format, args);
+
+		va_end(args);
+
+		logStream << buffer << "\n";
+
+		std::ofstream logFile(CLog::Impl::FinalPathToFileLog + "\\log.txt", std::ios::app);
+		if (logFile.is_open())
+		{
+			logFile << logStream.str();
+			logFile.close();
+		}
+		else
+		{
+			// Обработка ошибки открытия файла
 		}
 	}
 }

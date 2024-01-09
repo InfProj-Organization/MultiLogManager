@@ -7,9 +7,6 @@
       <Filter>Log</Filter>
     </ClInclude>
     <ClInclude Include="Exports.hpp" />
-    <ClInclude Include="Data.hpp">
-      <Filter>Log</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />

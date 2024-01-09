@@ -50,46 +50,40 @@ namespace Log
 
 		std::filesystem::path path_to_log = CLog::Impl::FinalPathToFileLog + "\\" + logFileName;
 
-		try 
+		if (!std::filesystem::exists(CLog::Impl::FinalPathToFileLog)) 
 		{
-			if (!std::filesystem::exists(CLog::Impl::FinalPathToFileLog)) 
+			if (!std::filesystem::create_directory(CLog::Impl::FinalPathToFileLog)) 
 			{
-				if (!std::filesystem::create_directory(CLog::Impl::FinalPathToFileLog)) 
-				{
-					return PositiveChecks::P_DIR_LOG_CREATED;
-				}
+				return 0x201;
 			}
+		}
 
-			if (!std::filesystem::exists(path_to_log)) 
+		if (!std::filesystem::exists(path_to_log)) 
+		{
+			std::ofstream recordFile(path_to_log);
+
+			if (recordFile.is_open()) 
 			{
-				std::ofstream recordFile(path_to_log);
-				if (recordFile.is_open()) 
-				{
-					struct tm* time_info = pImpl->getCurrentTimeInfo();
+				struct tm* time_info = pImpl->getCurrentTimeInfo();
 
-					std::ostringstream logStream;
-					logStream << "*** log created " << std::put_time(time_info, "(%T:%F)") << " ***\n";
-					logStream << "\n";
-					recordFile << logStream.str();
+				std::ostringstream logStream;
+				logStream << "*** Log created. Version 1.0" << std::put_time(time_info, "(%T:%F)") << " ***\n";
+				logStream << "\n";
+				recordFile << logStream.str();
 
-					recordFile.close();
+				recordFile.close();
 
-					return PositiveChecks::P_FILE_LOG_CREATED;
-				}
-				else 
-				{
-					return NegativeChecks::E_FILE_LOG_NOT_OPEN;
-				}
+				return 0x202;
 			}
 			else 
 			{
-				return PositiveChecks::P_FILE_LOG_FOUND;
+				return 0x601;
 			}
 		}
-		catch (...)
+		else 
 		{
-			return NegativeChecks::E_FILE_LOG_SYSTEM_ERROR;
-		}
+			return 0x203;
+		}	
 	}
 
 	void CLog::CreateFileSettings()
@@ -127,36 +121,12 @@ namespace Log
 		}
 	}
 
-	void CLog::Write(unsigned level, const char* format, ...)
+	void CLog::Write(const char* level, const char* format, ...)
 	{
-		std::string logLevelString;
-
-		switch (level)
-		{
-			case LoggingLevels::LOG_WARN:
-				logLevelString = "warn";
-				break;
-			case LoggingLevels::LOG_INFO:
-				logLevelString = "info";
-				break;
-			case LoggingLevels::LOG_DEBUG:
-				logLevelString = "debug";
-				break;
-			case LoggingLevels::LOG_ERROR:
-				logLevelString = "error";
-				break;
-			case LoggingLevels::LOG_OPEN:
-				logLevelString = "start";
-				break;
-			case LoggingLevels::LOG_CLOSE:
-				logLevelString = "close";
-				break;
-		}
-
 		struct tm* time_info = pImpl->getCurrentTimeInfo();
 
 		std::ostringstream logStream;
-		logStream << "[" << std::put_time(time_info, "%T:%F") << "] " << logLevelString << ": ";
+		logStream << "[" << std::put_time(time_info, "%T:%F") << "] " << level << ": ";
 
 		va_list args;
 		va_start(args, format);
@@ -169,6 +139,7 @@ namespace Log
 		logStream << buffer << "\n";
 
 		std::ofstream logFile(CLog::Impl::FinalPathToFileLog + "\\" + logFileName, std::ios::app);
+
 		if (logFile.is_open())
 		{
 			logFile << logStream.str();
@@ -176,7 +147,25 @@ namespace Log
 		}
 		else
 		{
-			// Обработка ошибки открытия файла
+
+		}
+	}
+
+	void CLog::Close()
+	{
+		std::ofstream logFile(CLog::Impl::FinalPathToFileLog + "\\" + logFileName, std::ios::app);
+
+		if (logFile.is_open())
+		{
+			struct tm* time_info = pImpl->getCurrentTimeInfo();
+
+			logFile << "\n";
+			logFile << "*** Log closed. Version 1.0" << std::put_time(time_info, "(%T:%F)") << " ***";
+			logFile.close();
+		}
+		else
+		{
+
 		}
 	}
 }

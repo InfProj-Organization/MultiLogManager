@@ -22,14 +22,16 @@ int main()
 
     pLog->CreateLog();
 
-    pLog->Write(0, "~ %s", __FUNCTION__);
+    pLog->Write("info", "~ %s", __FUNCTION__);
 
-    pLog->Write(0, "~ %s", __FUNCTION__);
-    pLog->Write(0, "~ %s", __FUNCTION__);
-    pLog->Write(0, "~ %s", __FUNCTION__);
+    pLog->Write("info", "~ %s", __FUNCTION__);
+    pLog->Write("info", "~ %s", __FUNCTION__);
+    pLog->Write("info", "~ %s", __FUNCTION__);
     //pLog->Write(0, "~ %s", __FUNCTION__);
 
     //CLog::Log(0, "~ %s", __FUNCTION__);
+
+    pLog->Close();
 
     delete pLog;
 

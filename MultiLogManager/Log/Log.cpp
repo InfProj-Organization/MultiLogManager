@@ -67,7 +67,7 @@ namespace Log
 				struct tm* time_info = pImpl->getCurrentTimeInfo();
 
 				std::ostringstream logStream;
-				logStream << "*** Log created. Version 1.0" << std::put_time(time_info, "(%T:%F)") << " ***\n";
+				logStream << "*** Log created. Version 1.0 " << std::put_time(time_info, "(%T:%F)") << " ***\n";
 				logStream << "\n";
 				recordFile << logStream.str();
 
@@ -160,7 +160,7 @@ namespace Log
 			struct tm* time_info = pImpl->getCurrentTimeInfo();
 
 			logFile << "\n";
-			logFile << "*** Log closed. Version 1.0" << std::put_time(time_info, "(%T:%F)") << " ***";
+			logFile << "*** Log closed. Version 1.0 " << std::put_time(time_info, "(%T:%F)") << " ***";
 			logFile.close();
 		}
 		else

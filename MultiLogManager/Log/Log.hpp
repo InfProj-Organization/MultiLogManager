@@ -31,6 +31,7 @@ namespace Log
 		CLog();
 		virtual ~CLog();
 
+		char logFileName[256];
 		unsigned CreateLog();
 
 		void CreateFileSettings();

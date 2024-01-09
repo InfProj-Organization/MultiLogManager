@@ -45,7 +45,10 @@ namespace Log
 
 	unsigned CLog::CreateLog()
 	{
-		std::filesystem::path path_to_log = CLog::Impl::FinalPathToFileLog + "\\log.txt";
+		struct tm* time_info = pImpl->getCurrentTimeInfo();
+		strftime(logFileName, sizeof(logFileName), "log_%Y.%m.%d_%H.%M.%S.txt", time_info);
+
+		std::filesystem::path path_to_log = CLog::Impl::FinalPathToFileLog + "\\" + logFileName;
 
 		try 
 		{
@@ -165,7 +168,7 @@ namespace Log
 
 		logStream << buffer << "\n";
 
-		std::ofstream logFile(CLog::Impl::FinalPathToFileLog + "\\log.txt", std::ios::app);
+		std::ofstream logFile(CLog::Impl::FinalPathToFileLog + "\\" + logFileName, std::ios::app);
 		if (logFile.is_open())
 		{
 			logFile << logStream.str();
